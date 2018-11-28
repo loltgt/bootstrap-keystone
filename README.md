@@ -32,7 +32,7 @@ Run Grunt:
 	grunt --debug
 
 
-### How to contribute
+### How to contribute
 
 You can open issues to report bug, request features or send a Pull Request.
 
