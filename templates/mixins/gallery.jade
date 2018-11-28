@@ -1,0 +1,30 @@
+mixin gallery(gallery)
+	div(data-ks-editable=editable(user, { list: 'Gallery', id: gallery.id }))&attributes(gallery.attributes)
+		if gallery.figures && gallery.figures.length
+			each media in gallery.figures
+				+figure(media, gallery.figures.indexOf(media))
+
+mixin figure(media, i)
+	if media.type == 'image'
+		figure(class=layout.image_class)
+			- var img_responsive = (media.image.landscape && media.image.portrait);
+			- var img_class = (i ? layout.media_item_lazy_class : layout.media_item_class);
+
+			if media.image.landscape.exists
+				if link
+					a(href=media.image.landscape.href)
+						img(class=img_class, src=media.image.landscape.thumb(size), alt=media.alternate)
+				else
+					img(class=img_class, src=media.image.landscape.thumb(size), alt=media.alternate)
+
+				if caption
+					figcaption(class='gallery-caption')= media.alternate
+			else if media.image.portrait.exists
+				if link
+					a(href=media.image.portrait.href)
+						img(class=img_class, src=media.image.portrait.thumb(size), alt=media.alternate)
+				else
+					img(class=img_class, src=media.image.portrait.thumb(size), alt=media.alternate)
+
+				if caption
+					figcaption(class='gallery-caption')= media.alternate

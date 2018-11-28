@@ -1,0 +1,38 @@
+mixin share(classname)
+	if data.share
+		div(class=classname)
+			if data.share.links
+				ul(class=layout.share_class, data-share-uri=data.share.uri, data-share)
+					each share, intent in data.share.links
+						if share.front
+							li(class='share ' + intent)
+								a(href=share.link, class=[layout.share_class, intent], title=share.name, target='_blank', data-share-intent=intent)
+									span(class=[layout.share_icon_class, (layout.icon_class_prefix + intent)])
+									span(class=layout.share_label_class)=share.label
+
+			a(class=layout.share_action_class, href='#' + layout.share_class, title=t("shareLabel", { defaultValue: "Share" }), data-action=layout.share_class)
+				i(class=layout.share_action_icon_class)
+				span.sr-only(aria-hidden='true')=t("shareLabel", { defaultValue: "Share" })
+
+mixin share_modal()
+	if data.share
+		section(id=layout.share_class, class=[layout.modal_class, layout.share_modal_class, layout.modal_hide_class], aria-hidden='true')
+			div(class='modal-content')
+				header(class='modal-header')
+					h4.modal-title=t("shareTitle", { defaultValue: "Share" })
+
+				form(class='modal-body share-form')
+					label.sr-only=t("shareLabel", { defaultValue: "Share" })
+
+					if data.share.links
+						fieldset(class='social-share')
+							ul(data-share-uri=data.share.uri, data-share)
+								each share, intent in data.share.links
+									li(class='share ' + intent)
+										a(href=share.link, class=[layout.share_class, intent], title=share.name, target='_blank', data-share-intent=intent)
+											span(class=share.icon)
+											span.sr-only(aria-hidden='true')=share.label
+
+					fieldset(id='copy-link', class='direct-share js-hide')
+						label=t("shareLinkLabel", { defaultValue: "Link" })
+						input(type='text', class='form-control readonly-field', value=data.share.uri, readonly)

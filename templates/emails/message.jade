@@ -1,0 +1,11 @@
+h1 Hi,
+p An enquiry was just submitted to #{brand}:
+
+if data
+	each field in data
+		p
+			strong #{field.name}: 
+			!=  field.value
+
+p
+	small Sent #{timestamp.format()}

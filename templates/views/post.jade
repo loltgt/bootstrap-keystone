@@ -1,0 +1,52 @@
+extends ../layouts/default
+
+block content
+	section.site-content.content-area#content(data-disqus)
+		article(id=data.slug, class=['doc', 'post'])
+			if ! data.post
+				h2=t("postNotFoundTitle", { defaultValue: "Post not found" })
+			else
+				header.doc-header
+					.doc-title
+						h1= data.post.title
+					.doc-meta
+						- moment = data.post._.publishedDate.moment
+						if data.post.publishedDate
+							time.doc-published-date(datetime=data.post._.publishedDate.moment().toISOString(), pubdate) #{data.post._.publishedDate.format('DD/MM/YYYY')}
+						if data.categories && data.categories.length
+							span.doc-categories.categories
+								each category, category_i in data.categories
+									a.category(href=path + 'category:' + category.key + '/')= category.name
+									if category_i < data.categories.length - 1
+										|  
+						if data.post.author
+							span.doc-author.author=data.post.author.name.full
+					.doc-navigation
+						h6.sr-only=t("postNavigationText", { defaultValue: "Posts navigation" })
+						nav.nav-links
+							if data.adjacents.previous
+								span.meta-nav.previous: a(href=data.adjacents.previous.url, rel='prev', title=t("postNavigationPrevTitle", { postProcess: "sprintf", sprintf: [ data.adjacents.previous.title ], defaultValue: "Previous Post: " +  data.adjacents.previous.title })): span.icon-arrow-left
+							else
+								span.meta-nav.previous.disabled: span.icon-arrow-left
+
+							span.meta-nav.back: a(href=path, title=t("postNavigationBackTitle", { defaultValue: "Go back to Posts" })): span.icon-back
+
+							if data.adjacents.next
+								span.meta-nav.next: a(href=data.adjacents.next.url, rel='next', title=t("postNavigationNextTitle", { postProcess: "sprintf", sprintf: [ data.adjacents.next.title ], defaultValue: "Next Post: " + data.adjacents.next.title })): span.icon-arrow-right
+							else
+								span.meta-nav.next.disabled: span.icon-arrow-right
+					.doc-actions
+						+share('doc-share')
+				.doc-content
+					if data.post.thumbnail.exists
+						.image-wrap: img(src=data.post._.thumbnail.fit(750,450)).img-responsive
+					!= data.post.content.full
+				.doc-footer
+					if data.tags && data.tags.length
+						nav.doc-tags.nav.nav-inline
+							h5=t("tagTitle", { defaultValue: "Tags" })
+							each tag in data.tags
+								a.nav-link.tag(href=tag.href, title=tag.title)=tag.label
+
+	+share_modal()
+	+disqus()

@@ -1,0 +1,13 @@
+mixin head(meta)
+	if meta.title
+		title #{meta.title}
+	if meta.description
+		meta(name='description', content=meta.description)
+	if meta.keywords
+		meta(name='keywords', content=meta.keywords)
+	if meta.metaTags
+		each attrs in meta.metaTags
+			meta&attributes(attrs)
+	if meta.linkTags
+		each attrs in meta.linkTags
+			link&attributes(attrs)

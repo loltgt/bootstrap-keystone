@@ -1,0 +1,43 @@
+extends ../layouts/default
+
+block content
+	section.site-content.content-area#content
+		article(id=data.slug, class=['doc', 'project'])
+			if ! data.project
+				h2=t("projectNotFoundTitle", { defaultValue: "Project not found" })
+			else
+				header.doc-header
+					.doc-title
+						h1= data.project.title
+					.doc-navigation
+						h6.sr-only=t("projectNavigationText", { defaultValue: "Projects navigation" })
+						nav.nav-links
+							if data.adjacents.previous
+								span.meta-nav.previous: a(href=data.adjacents.previous.url, rel='prev', title=t("projectNavigationPrevTitle", { postProcess: "sprintf", sprintf: [ data.adjacents.previous.title ], defaultValue: "Previous Project: " + data.adjacents.previous.title })): span.icon-arrow-left
+							else
+								span.meta-nav.previous.disabled: span.icon-arrow-left
+
+							span.meta-nav.back: a(href=path, title=t("projectNavigationBackTitle", { defaultValue: "Go back to Projects" })): span.icon-back
+
+							if data.adjacents.next
+								span.meta-nav.next: a(href=data.adjacents.next.url, rel='next', title=t("projectNavigationNextTitle", { postProcess: "sprintf", sprintf: [ data.adjacents.next.title ], defaultValue: "Next Project: " + data.adjacents.next.title })): span.icon-arrow-right
+							else
+								span.meta-nav.next.disabled: span.icon-arrow-right
+					.doc-meta
+						- moment = data.project._.publishedDate.moment
+						if data.project.publishedDate
+						 	time.doc-published-date(datetime=data.project._.publishedDate.moment().toISOString(), pubdate) #{data.project._.publishedDate.format('DD/MM/YYYY')}
+						if data.types && data.types.length
+							span.doc-categories.categories
+								each type, type_i in data.types
+									a.category(href=path + 'type:' + type.key + '/')= type.name
+									if type_i < data.types.length - 1
+										|  
+					.doc-actions
+						+share('doc-share')
+				.doc-content
+					if data.project.thumbnail.exists
+						.image-wrap: img(src=data.project._.thumbnail.fit(750,450)).img-responsive
+					!= data.project.content.html
+
+	+share_modal()

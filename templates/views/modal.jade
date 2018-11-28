@@ -1,0 +1,28 @@
+extends ../layouts/modal
+
+block intro
+	if data.page && data.page.title
+		h4.modal-title= data.page.title
+
+block heading
+	if data.hasHeading
+		+slideshow(data.page.heading)
+
+block content
+	if ! data.page
+		h2=t("modalInvalidText", { defaultValue: "Invalid page." })
+	else
+		.container
+			!= data.page.content.html
+
+	if data.children && data.children.length
+		each page in data.children
+			.page: .container
+				!= page.content.html
+
+if isAjaxRequest
+	block html
+		+modal()
+else
+	block main
+		+modal()

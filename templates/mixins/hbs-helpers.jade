@@ -1,0 +1,55 @@
+mixin media(media)
+	div&attributes(media.attributes)
+		if media.type == 'image'
+			figure&attributes(media.image.attributes)
+				if media.image.landscape.exists
+					img(class=media.image.landscape.class, src=media.image.landscape.href, alt=media.alternate)
+				if media.image.portrait.exists
+					img(class=media.image.portrait.class, src=media.image.portrait.href, alt=media.alternate)
+				if media.image.caption
+					figcaption
+						!= media.image.caption
+
+		else if media.type == 'video'
+			video&attributes(media.video.attributes)
+				if media.alternate
+					= alternate
+				if media.video.fallback
+					!= media.video.fallback
+				if media.video.mp4.exists
+					source(type=media.video.mp4.filetype, src=media.video.mp4.href)
+				if media.video.webm.exists
+					source(type=media.video.webm.filetype, src=media.video.webm.href)
+				if media.video.ogg.exists
+					source(type=media.video.ogg.filetype, src=media.video.ogg.href)
+
+
+		else if media.type == 'audio'
+			audio&attributes(media.audio.attributes)
+				if media.alternate
+					= alternate
+				if media.audio.fallback
+					!= media.audio.fallback
+				if media.audio.mp3.exists
+					source(type=media.audio.mp3.filetype, src=media.audio.mp3.href)
+				if media.audio.aac.exists
+					source(type=media.audio.aac.filetype, src=media.audio.aac.href)
+				if media.audio.ogg.exists
+					source(type=media.audio.ogg.filetype, src=media.audio.ogg.href)
+				if media.audio.captions
+					track(kind='captions' src='caption.vtt' srclang='lang' label='Language')
+
+		else if media.type == 'embed'
+			div&attributes(media.embed.attributes)
+				if media.embed.html
+					!= media.embed.html
+
+mixin launcher(link)
+	div&attributes(link.attributes)
+		a&attributes(link.anchor.attributes)
+			span(class=['launch-icon', link.anchor.icon])
+			span(class='launch-label')
+				if link.anchor.text
+					=link.anchor.text
+					| 
+				span(class='launch-link')=link.anchor.url

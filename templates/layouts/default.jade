@@ -1,0 +1,137 @@
+include ../mixins/head
+include ../mixins/flash-messages
+include ../mixins/widgets
+include ../mixins/cards
+include ../mixins/slideshow
+include ../mixins/gallery
+include ../mixins/share
+include ../mixins/disqus
+include ../mixins/cookies
+
+block html
+	doctype html
+	html&attributes(meta.documentAttrs)
+
+		block head
+			head&attributes(meta.headAttributes)
+				meta(charset='utf-8')
+				meta(name='viewport', content='width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no')
+				meta(http-equiv='x-ua-compatible' content='ie=edge')
+
+				if meta.webapp
+					meta(name='mobile-web-app-capable' content='yes')
+					meta(name='apple-mobile-web-app-capable' content='yes')
+					meta(name='apple-mobile-web-app-title' id='appname' content=meta.webapp.name)
+
+					if meta.webapp.ios_status_bar_style
+						meta(name='apple-mobile-web-app-status-bar-style' content=meta.webapp.ios_status_bar_style)
+
+				if meta
+					+head(meta)
+				else
+					title= title
+
+				link(href='/favicon.ico', type='image/x-icon', rel='shortcut icon')
+				link(href='/favicon.png', type='image/png', rel='apple-touch-icon')
+
+				link(href='/assets/css/app.css', rel='stylesheet')
+
+		block body
+			body(id=section, itemscope, itemtype='http://schema.org/WebPage')&attributes(meta.bodyAttrs)
+
+				block header
+					header#header.site-header.navbar.navbar-static-top(itemscope, itemtype='http://schema.org/WPHeader')
+						.header-main
+							button.navbar-toggle.menu-toggle.offcanvas-toggle(type='button', data-toggle='offcanvas', data-target='.navbar-offcanvas', aria-expanded='false', aria-controls='navigation')
+								span.sr-only=t("menuLabel", { defaultValue: "Menu" })
+								span.icon.icon-menu
+							a.navbar-brand(href=homepage, rel='home', title='{BRAND_NAME}'): span.sr-only {BRAND_NAME}
+							nav#navigation(itemscope, itemtype='http://schema.org/SiteNavigationElement').navbar.navbar-light.navbar-offcanvas
+								a.sr-only.sr-only-focusable.skip-link(href='#content')=t("skipText", { defaultValue: "Skip to content" })
+								if navigations && navigations['header']
+									ul.nav.navbar-nav
+										each link in navigations['header']
+											if link.children.length
+												li.nav-item(class=link.slug + (section == link.slug ? ' active' : '') + ' dropdown')
+													a.nav-link.dropdown-toggle(data-toggle='dropdown', href='#')= link.label
+													div.dropdown-menu
+														each child in link.children
+															a.dropdown-item(href=child.href)= child.label
+											else
+												li.nav-item(class=link.slug + (section == link.slug ? ' active' : '')): a.nav-link(href=link.href)= link.label
+
+							if i18n && languageSelector
+								nav#language(aria-expanded='false').language-selector
+									button.navbar-toggle.dropdown-toggle.language-toggle(type='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false', title=t("languageSelectorTitle", { defaultValue: "Language Selector" }))
+										span.icon.icon-language
+
+									.dropdown-menu
+										each lang in languageSelector
+											a.dropdown-item(class=lang.class, href=lang.href, title=lang.title)
+												= lang.label
+
+				block main
+					main.main-content(itemscope, itemtype='http://schema.org/WebPage', itemprop='mainContentOfPage')
+
+						block heading
+
+						block notify
+							+flash-messages(messages)
+
+						block intro
+
+						block content				
+
+				block page-bottom
+					if widgets && widgets['page-bottom']
+						+widget-area(widgets['page-bottom'])
+
+				block footer
+					footer#colophon.site-footer(itemscope, itemtype='http://schema.org/WPFooter'): .container
+						.site-info
+							if legal
+								p
+									if legal.copyright && legal.copyright.enable
+										span.copyright
+											=t("copyrightText", { defaultValue: "Copyright ©" }) 
+											span.copyright-year.numbers=legal.copyright.year 
+											| 
+											strong=legal.copyright.owner
+
+									if legal.vat && legal.vat.enable
+										span.vat
+											=t("vatText", { defaultValue: "VATIN: "})
+											span.vatin.numbers=legal.vat.vatin
+
+								if legal.notes && legal.notes.enable
+									p.notes
+										!=legal.notes.text
+
+						.site-links
+							if navigations && navigations['footer']
+								ul.nav.nav-inline
+									each link in navigations['footer']
+										if link.children.length
+											li.nav-item(class=link.slug + (section == link.slug ? ' active' : '') + ' dropdown')
+												a.nav-link.dropdown-toggle(data-toggle='dropdown', href='#')= link.label
+												div.dropdown-menu
+													each child in link.children
+														a.dropdown-item(href=child.href)= child.label
+										else
+											li.nav-item(class=link.slug + (section == link.slug ? ' active' : '')): a.nav-link(href=link.href)= link.label
+
+				if legal && legal.cookies
+					+cookies(legal.cookies)
+
+				noscript
+					link(href='{FONT_API}', rel='stylesheet')
+
+				block js
+					if inlineScripts
+						script!=inlineScripts
+					script(src='/assets/scripts/app.js')
+
+				if environment === 'dev' && livereload
+					script(src='//localhost:35729/livereload.js')
+
+//Powered by KeystoneJS <http://keystonejs.com>

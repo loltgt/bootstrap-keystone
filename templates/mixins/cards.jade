@@ -1,0 +1,40 @@
+mixin cards(data)
+	.content-area.has-masonry
+		.masonry
+			if data.length
+				each entry in data
+					+entry(entry, data.options)
+
+mixin entry(entry, options)
+	article(class=entry.classes(['card', 'entry']), data-href=entry.url, data-filters=((entry.filters && entry.filters.length) ? entry.filters : null), data-tags=((entry.tags && entry.tags.length) ? entry.tags.join(',') : null), data-ks-editable=editable(user, { list: options.list, id: entry.id }))
+		.entry-wrapper
+			a.entry-click-target.click-target(tabindex='-1', aria-hidden='true', href=entry.url, title=t("readTitle", { postProcess: "sprintf", sprintf: [ entry.title ], defaultValue: "Read: %s" }))
+
+			if entry.thumbnail && entry.thumbnail.length
+				figure.entry-thumbnail
+					- var thumbnail = entry.thumbnail[0].image.landscape || entry.thumbnail[0].image.portrait;
+
+					if thumbnail.exists
+						a(href=entry.url): img(src=thumbnail.thumb('medium_cropped'))
+
+			.entry-block
+				.entry-title
+					h3.title: a(href=entry.url, title=t("readTitle", { postProcess: "sprintf", sprintf: [ entry.title ], defaultValue: "Read: %s" }))= entry.title
+					if entry.features && entry.features.length
+						div.entry-features
+							each feature in entry.features
+								span.entry-feature=feature
+
+				if entry.content.brief
+					.entry-excerpt
+						p!= utils.cropHTMLString(entry.content.brief, 100, '...', true)
+
+				.entry-meta(class=(options.hideMeta ? 'invisible' : ''))
+					if entry.publishedDate
+						time.published-date(datetime=entry._.publishedDate.moment().toISOString())= entry._.publishedDate.format('DD/MM/YYYY HH:ss')
+					if entry[options.cats] && entry[options.cats].length
+						div.categories
+							each cat, i in entry[options.cats]
+								span.category= cat.name
+								if i < entry[options.cats].length - 1
+									| 

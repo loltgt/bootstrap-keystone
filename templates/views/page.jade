@@ -1,0 +1,27 @@
+extends ../layouts/default
+
+block heading
+	if data.hasHeading
+		section.heading
+			+slideshow(data.page.heading)
+
+block content
+	section.site-content.content-area#content
+		if ! data.page
+			h2=t("pageNotFoundTitle", { defaultValue: "Page not found" })
+		else
+			div(data-ks-editable=editable(user, { list: 'Page', id: data.page.id }))&attributes(data.page.attributes)
+				if (data.page.custom && data.page.custom.wide)
+					!= data.page.content.html
+				else
+					.container
+						!= data.page.content.html
+
+		if data.hasChildren
+			each page in data.children
+				div(data-ks-editable=editable(user, { list: 'ChildPage', id: page.id }))&attributes(page.attributes)
+					if (page.custom && page.custom.wide)
+						!= page.content.html
+					else
+						.container
+							!= page.content.html

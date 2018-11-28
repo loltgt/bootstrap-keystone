@@ -1,0 +1,40 @@
+mixin slideshow(slideshow)
+	div(data-ks-editable=editable(user, { list: 'Slideshow', id: slideshow.id }))&attributes(slideshow.attributes)
+		if slideshow.slides && slideshow.slides.length
+			each slide in slideshow.slides
+				+slide(slide, slideshow.slides.indexOf(slide))
+
+mixin slide(slide, i)
+	div&attributes(slide.attributes)
+		if slide.type == 'image'
+			figure&attributes(slide.media.image.attributes)
+				if slide.media.image.landscape.exists
+					img(class=slide.media.image.landscape.class, src=slide.media.image.landscape.href, alt=slide.media.image.landscape.alternate)
+				if slide.media.image.portrait.exists
+					img(class=slide.media.image.portrait.class, src=slide.media.image.portrait.href, alt=slide.media.image.portrait.alternate)
+
+		else if slide.type == 'video'
+			video&attributes(slide.media.video.attributes)
+				if slide.media.video.fallback
+					= 'fallback'
+				if slide.media.video.mp4.exists
+					source(type=slide.media.video.mp4.filetype, src=slide.media.video.mp4.href)
+				if slide.media.video.webm.exists
+					source(type=slide.media.video.webm.filetype, src=slide.media.video.webm.href)
+				if slide.media.video.ogg.exists
+					source(type=slide.media.video.ogg.filetype, src=slide.media.video.ogg.href)
+
+		else if media.type == 'embed'
+			div&attributes(media.embed.attributes)
+				if media.embed.html
+					!= media.embed.html
+
+		else if slide.type == 'custom'
+			!= slide.custom
+
+		if slide.hasCaption
+			div&attributes(slide.caption.attributes): .container
+				if slide.caption.title
+					h2= slide.caption.title
+				if slide.caption.text
+					!= slide.caption.text

@@ -1,0 +1,61 @@
+extends ../layouts/default
+
+block heading
+	if data.hasHeading
+		section.heading
+			+slideshow(data.page.heading)
+
+block intro
+	section(class=['page', 'page-head'])
+		h1= data.page.title
+
+		if data.page.content.html
+			div(data-ks-editable=editable(user, { list: 'Page', id: data.page.id }))&attributes(data.page.attributes)
+				!= data.page.content.html
+
+		header.navigation.portfolio-navigation#portfolio-navigation
+
+			if data.types.length
+				nav.navigation-controller: ul
+					li: a(href=locals.data.uri, class=!data.type ? 'active' : null)=t("allLabel", { defaultValue: "All" })
+					each type in data.types
+						li: a(href=locals.data.uri + 'type:' + type.key[0] + '/', class=((data.type && data.type.id) == type.id ? 'active' : null), data-filter=type.key.join(','))= type.name
+
+			div.search-controller
+				form#search-form(action='', method='post', role='search').search-form
+					fieldset
+						label.sr-only.sr-only-focusable(for='search')=t("searchLabel", { defaultValue: "Search" })
+						div.search-input
+							input#search-input(type='text', name='search', placeholder=t("searchLabel", { defaultValue: "Search" }))
+						div.search-submit
+							button#search-submit(type='submit', title=t("searchButton", { defaultValue: "Search" }), aria-label=t("searchLabel", { defaultValue: "Search" })).btn.btn-search: span.icon-search(aria-hidden='true')
+						input(type='hidden', name='action', value='search')
+
+block content
+	section.site-content.content-area.has-masonry#content
+		.masonry&attributes(data.masonryAttrs)
+			if filters.type && ! data.type
+				h3.text-muted=t("portfolioInvalidTypeText", { defaultValue: "Invalid portfolio category." })
+			else
+				if data.projects.results.length
+					each project in data.projects.results
+						+entry(project, data.options)
+
+					if data.projects.totalPages > 1
+						ul.pagination
+							if data.projects.previous
+								li: a(href='?page=' + data.projects.previous): span.glyphicon.glyphicon-chevron-left
+							else
+								li.disabled: a(href='?page=' + 1): span.glyphicon.glyphicon-chevron-left
+							each p, i in data.projects.pages
+								li(class=data.projects.currentPage == p ? 'active' : null)
+									a(href='?page=' + (p == '...' ? (i ? data.projects.totalPages : 1) : p ))= p
+							if data.projects.next
+								li: a(href='?page=' + data.projects.next): span.glyphicon.glyphicon-chevron-right
+							else
+								li.disabled: a(href='?page=' + data.projects.totalPages): span.entypo.glyphicon.glyphicon-chevron-right
+				else
+					if data.category
+						h3.text-muted=t("portfolioEmptyTypeText", { postProcess: "sprintf", sprintf: [ data.category.name ], defaultValue: "There are no projects in the portfolio category %s." })
+					else
+						h3.text-muted=t("portfolioEmptyText", { defaultValue: "There are no projects yet." })

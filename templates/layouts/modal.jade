@@ -1,0 +1,16 @@
+extends ./default
+
+mixin modal()
+	.modal-dialog(role='dialog', itemscope, itemtype='http://schema.org/WebPage', itemprop='mainContentOfPage')
+		.modal-content
+
+			.modal-header
+				block intro
+
+			.modal-body
+				block heading
+
+				block content
+
+			.modal-footer
+				+flash-messages(messages)

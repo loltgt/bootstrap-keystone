@@ -1,0 +1,16 @@
+mixin widget-area(area)
+	if area && area.widgets && area.widgets.length
+		section(class=area.classes, data-ks-editable=editable(user, { list: 'WidgetArea', id: area.id })): .container
+			if area.title
+				h4.widget-area-title= area.title
+
+			.widget-area-content
+				each widget in area.widgets
+					+widget(widget)
+
+mixin widget(widget)
+	div(class=widget.classes, data-ks-editable=editable(user, { list: 'Widget', id: widget.id }))
+		if widget.title
+			h5= widget.title
+
+		!= widget.content

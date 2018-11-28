@@ -1,0 +1,8 @@
+mixin cookies(cookies)
+	if cookies.enable
+		noscript
+			div#cookies.cookie-banner: .container
+				if cookies.custom
+					!= cookies.custom
+				else if cookies.href && cookies.title && cookies.target && cookies.text
+					p!=t("cookiesMessage", { postProcess: "sprintf", sprintf: cookies, defaultValue: "This website uses cookies to ensure you get the best experience on our website, using this you agree to our <a href=\"/privacy/\" title=\"Cookie Policy\" target=\"_blank\">Cookie Policy</a>." })
